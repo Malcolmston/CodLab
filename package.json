@@ -1,0 +1,12 @@
+{
+  "name": "codlab",
+  "version": "1.0.0",
+  "description": "A site to allow for colabrative coding. This site will allow for not just colab codeing in large groups, but a server insesive way to connect users to the same files via web sockets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
