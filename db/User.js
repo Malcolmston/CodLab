@@ -3,8 +3,6 @@
 const sequelize = require('./connect');
 const { DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
-const { type } = require('os');
-
 
 const SALT = process.env.SALT || 10;
 
