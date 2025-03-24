@@ -38,4 +38,94 @@ abstract class Account {
         
         return !!user;
     }
+
+    public  getFullName (): string{
+        return `${this.firstname} ${this.lastname}`;
+    }
+
+    /**
+     * soft deletes a user
+     */
+    public async delete () {
+        if( await this.doseExist() ) {
+            await db.User.destroy({
+                where: {
+                    id: this.id
+                }
+            });
+        }
+    }
+
+    /**
+     * restores a soft deleted user
+     */
+    public async restore () {
+        if( await this.isDeleted() ) {
+            await db.User.restore({
+                where: {
+                    id: this.id
+                }
+            });
+        }
+    }
+
+    /**
+     * gets the type of the user
+     * @returns the type of the user
+     */
+    public getType (): Type {
+        return this.type;
+    }
+
+    /**
+     * gets the email of the user
+     * @returns the email of the user
+     */
+    public getEmail (): string {
+        return this.email;
+    }
+
+    /**
+     * gets the username of the user
+     * @returns the username of the user
+     */
+    public getUsername (): string {
+        return this.username;
+    }
+
+    /**
+     * gets the id of the user
+     * @returns the id of the user
+     */
+    public getId (): number {
+        return this.id;
+    }
+
+    /**
+     * update an account
+     * @param firstname the current fname
+     * @param lastname the current lname
+     * @param email the current email
+     * @param username the current username
+     * @param password the current password
+     */
+    private async update (firstname?: string, lastname?: string, email?: string, username?: string, password?: string) {
+        if( await this.doseExist() ) {
+            await db.User.update({
+                firstname,
+                lastname,
+                email,
+                username,
+                password
+            },{
+                where: {
+                    id: this.id
+                }
+            });
+        }
+    }
+
+    abstract login (username: string,password: string) : Promise<boolean>;
+    abstract signUp(): Promise<boolean>;
+
 }
