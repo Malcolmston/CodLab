@@ -53,4 +53,29 @@ class Project {
         }
         
     }
+
+    /**
+     * Deletes the project from the database.
+     */
+    public async delete(): Promise<void> {
+        if (!this.id) {
+            throw new Error("Project ID is not set. Cannot delete project.");
+        }
+
+        let transaction = await db.sequelize.transaction();
+        try {
+            // Delete the project from the database
+            await db.Project.destroy({
+                where: { id: this.id },
+                transaction
+            });
+
+            // Commit the transaction
+            await transaction.commit();
+        } catch (error) {
+            console.error("Error deleting project:", error);
+            // Rollback the transaction in case of error
+            await transaction.rollback();
+        }
+    }
 }
