@@ -78,4 +78,29 @@ class Project {
             await transaction.rollback();
         }
     }
+
+    /**
+     * Recovers a deleted project from the database.
+     */
+    public async recover(): Promise<void> {
+        if (!this.id) {
+            throw new Error("Project ID is not set. Cannot recover project.");
+        }
+
+        let transaction = await db.sequelize.transaction();
+        try {
+            // Recover the project in the database
+            await db.Project.restore({
+                where: { id: this.id },
+                transaction
+            });
+
+            // Commit the transaction
+            await transaction.commit();
+        } catch (error) {
+            console.error("Error recovering project:", error);
+            // Rollback the transaction in case of error
+            await transaction.rollback();
+        }
+    }
 }
