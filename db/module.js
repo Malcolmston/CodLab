@@ -14,5 +14,6 @@ module.exports = {
     File,
     User,
     Project,
-    Role
+    Role,
+    sequelize
 };
