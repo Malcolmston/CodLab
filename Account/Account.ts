@@ -1,11 +1,12 @@
 import * as db from 'db';
+import {compareSync} from 'bcrypt';
 
-enum Type {
+export enum Type {
     Basic = "basic",
     Admin = "admin"
 }
 
-abstract class Account {
+export default abstract class Account {
     protected id: number;
     protected firstname: string;
     protected lastname: string;
@@ -13,17 +14,51 @@ abstract class Account {
     protected type: Type;
     protected username: string;
     protected password: string;
-
-    public static async init () {
-
-    } 
+    
+    /**
+     * creates an account
+     * @param id the id of the account
+     * @param firstname the first name of the account
+     * @param lastname the last name of the account
+     * @param email the email of the account
+     * @param username the username of the account
+     * @param password the password of the account
+     * @param type the type of the account
+     */
+    constructor(id: number);
+    constructor(firstname: string, lastname: string, email: string, username: string, password: string, type: Type);
+    constructor(...args: any[]) {
+        if( args.length === 1 ) {
+            this.id = args[0];
+        } else if ( args.length === 6 ) {
+            this.firstname = args[0];
+            this.lastname = args[1];
+            this.email = args[2];
+            this.username = args[3];
+            this.password = args[4];
+            this.type = args[5];
+        } else {
+            throw new Error("Invalid arguments");
+        }
+    }
+       
+ 
+    /**
+     * checls if a password is correct
+     * @param password raw str password
+     * @param hash the password hash
+     * @returns wether or not the password is correct
+     */
+    public static compare (password: string, hash: string) {
+        return compareSync(password,hash);
+    }
 
     /**
      * get is a user by id is soft deleted
      * @returns true if the account is soft deleted and false otherwise
      */
     protected async isDeleted (): Promise<boolean> {
-        let user = await db.User.findByPk(this.id);
+        let user = await db.User.findByPk(this.id, {paranoid: false});
 
         if( !user ) return true;
         return user.isSoftDeleted();
