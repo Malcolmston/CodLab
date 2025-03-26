@@ -43,7 +43,7 @@ class Account {
     async isDeleted() {
         let user = await db.User.findByPk(this.id, { paranoid: false });
 
-        if (!user) return true;
+        if (!user) return false;
         return user.isSoftDeleted();
     }
 
