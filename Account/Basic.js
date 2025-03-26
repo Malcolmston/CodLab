@@ -65,7 +65,8 @@ class Basic extends Account {
      * @returns {Promise<boolean>} true if signup successful
      */
     async signUp() {
-        if ((await this.isDeleted()) || (await this.doseExist())) return false;
+        if ( (await this.doseExist()) || (await this.isDeleted()) ) return false;
+
         let transaction = await db.sequelize.transaction();
 
         try {
