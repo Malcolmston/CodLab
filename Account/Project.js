@@ -1,46 +1,63 @@
-import Account, { Type } from "./Account";
-import * as db from "../db";
+const db = require('db');
 
-export default class Project {
-    private id: number;
-    private name: string;
-    private description: string;
-    private owner: Account;
-
-    constructor(name: string, description: string, owner: Account) {
+class Project {
+    /**
+     * Creates a new project
+     * @param {string} name project name
+     * @param {string} description project description
+     * @param {Object} owner project owner (Account instance)
+     */
+    constructor(name, description, owner) {
         this.name = name;
         this.description = description;
         this.owner = owner;
     }
 
-    public get projectId(): number {
+    /**
+     * Get the project ID
+     * @returns {number} project ID
+     */
+    get projectId() {
         return this.id;
     }
 
-    public get projectName(): string {
+    /**
+     * Get the project name
+     * @returns {string} project name
+     */
+    get projectName() {
         return this.name;
     }
 
-    public get projectDescription(): string {
+    /**
+     * Get the project description
+     * @returns {string} project description
+     */
+    get projectDescription() {
         return this.description;
     }
 
-    public get projectOwner(): Account {
+    /**
+     * Get the project owner
+     * @returns {Object} owner (Account instance)
+     */
+    get projectOwner() {
         return this.owner;
     }
 
     /**
      * Creates a new project in the database.
      * This method uses a transaction to ensure that the project is created atomically.
+     * @returns {Promise<void>}
      */
-    public async create(): Promise<void> {
+    async create() {
         let transaction = await db.sequelize.transaction();
         try {
             // Create the project in the database
             var pro = await db.Project.create({
                 name: this.name,
                 description: this.description,
-                ownerId: this.owner.getId, // Assuming owner has an accountId property
+                ownerId: this.owner.getId(), // Assuming owner has an getId method
             }, { transaction });
 
             // Commit the transaction
@@ -51,13 +68,13 @@ export default class Project {
             // Rollback the transaction in case of error
             await transaction.rollback();
         }
-        
     }
 
     /**
      * Deletes the project from the database.
+     * @returns {Promise<void>}
      */
-    public async delete(): Promise<void> {
+    async delete() {
         if (!this.id) {
             throw new Error("Project ID is not set. Cannot delete project.");
         }
@@ -81,8 +98,9 @@ export default class Project {
 
     /**
      * Recovers a deleted project from the database.
+     * @returns {Promise<void>}
      */
-    public async recover(): Promise<void> {
+    async recover() {
         if (!this.id) {
             throw new Error("Project ID is not set. Cannot recover project.");
         }
@@ -107,8 +125,9 @@ export default class Project {
     /**
      * Hard deletes the project from the database.
      * This method permanently removes the project from the database.
+     * @returns {Promise<void>}
      */
-    public async hardDelete(): Promise<void> {
+    async hardDelete() {
         if (!this.id) {
             throw new Error("Project ID is not set. Cannot hard delete project.");
         }
@@ -131,3 +150,5 @@ export default class Project {
         }
     }
 }
+
+module.exports = Project;
