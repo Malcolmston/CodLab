@@ -55,7 +55,7 @@ const User = sequelize.define('User', {
         allowNull: false,
         validate: {
             notEmpty: true,
-            is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
+            is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[a-zA-Z0-9]).{8,}$/
             // This regex checks for at least one lowercase letter, one uppercase letter, one digit, and a minimum length of 8 characters
         }
     }
