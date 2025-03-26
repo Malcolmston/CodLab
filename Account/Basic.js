@@ -57,7 +57,7 @@ class Basic extends Account {
 
         if (!user) return false;
 
-        return !(await this.isDeleted()) && await this.doseExist() && Account.compare(password, user.password);
+        return !(await this.isDeleted()) && !(await this.doseExist()) && Account.compare(password, user.password);
     }
 
     /**
@@ -83,7 +83,6 @@ class Basic extends Account {
             return true;
         } catch (error) {
             await transaction.rollback();
-            console.error("Error during sign up:", error);
             return false;
         }
     }
