@@ -103,4 +103,31 @@ class Project {
             await transaction.rollback();
         }
     }
+
+    /**
+     * Hard deletes the project from the database.
+     * This method permanently removes the project from the database.
+     */
+    public async hardDelete(): Promise<void> {
+        if (!this.id) {
+            throw new Error("Project ID is not set. Cannot hard delete project.");
+        }
+
+        let transaction = await db.sequelize.transaction();
+        try {
+            // Hard delete the project from the database
+            await db.Project.destroy({
+                where: { id: this.id },
+                force: true, // Force deletion
+                transaction
+            });
+
+            // Commit the transaction
+            await transaction.commit();
+        } catch (error) {
+            console.error("Error hard deleting project:", error);
+            // Rollback the transaction in case of error
+            await transaction.rollback();
+        }
+    }
 }
