@@ -1,7 +1,7 @@
 import Account, { Type } from "./Account";
 import * as db from "../db";
 
-class Project {
+export default class Project {
     private id: number;
     private name: string;
     private description: string;
