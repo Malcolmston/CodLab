@@ -1,8 +1,10 @@
 import Account, { Type } from "./Account";
 import * as db from "../db";
+import Project from "./Project";
 
 
 class Basic extends Account {
+    private projects: Array<Project>;
 
     constructor(firstname: string, lastname: string, email: string, username: string, password: string) {
         super(firstname, lastname, email, username, password, Type.Basic);
@@ -66,4 +68,37 @@ class Basic extends Account {
         
     }
     
+    async createProject(name: string, description: string): Promise<Project | null> {
+        if( !await this.doseExist() ) return null;
+
+        let transaction = await db.sequelize.transaction();
+        try {
+            let user = await db.User.findByPk(this.id);
+            if( !user ) return null;
+
+            let project = user.createProject({
+                name,
+                description
+            }, { transaction });
+
+            await transaction.commit();
+            return new Project(name, description, this);
+        } catch (error) {
+            await transaction.rollback();
+            console.error("Error creating project:", error);
+            return null;
+        }
+    }
+
+    async getProjects(): Promise<Array<Project>> {
+        if( !await this.doseExist() ) return [];
+
+        let user = await db.User.findByPk(this.id, {
+            include: [db.Project]
+        });
+
+        if( !user ) return [];
+
+        return user.map((project: any) => new Project(project.name, project.description, this));
+    }
 }
